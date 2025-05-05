@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Проверяет, что запрос сформирован корректно, сервис возвращает код ответа 200 и тело ответа не пустое.
 func TestMainHandlerCheckStatusandBody(t *testing.T) {
 
 	req := httptest.NewRequest("GET", "/cafe?count=2&city=moscow", nil)
@@ -22,11 +23,11 @@ func TestMainHandlerCheckStatusandBody(t *testing.T) {
 	body := responseRecorder.Body.String()
 
 	require.Equal(t, status, http.StatusOK)
-
 	require.NotEmpty(t, body)
 
 }
 
+// Проверяет, что город, который передаётся в параметре city, не поддерживается. Сервис возвращает код ответа 400 и ошибку wrong city value в теле ответа.
 func TestMainHandlerWhenCityIsNotSupported(t *testing.T) {
 	req := httptest.NewRequest("GET", "/cafe?count=3&city=invalidcity", nil)
 
@@ -41,6 +42,7 @@ func TestMainHandlerWhenCityIsNotSupported(t *testing.T) {
 	assert.Equal(t, "wrong city value", body)
 }
 
+// Проверяет, что в случае если в параметре count указано больше, чем есть всего, должны вернуться все доступные кафе.
 func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	totalCount := 4
 
@@ -51,7 +53,6 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	handler.ServeHTTP(responseRecorder, req)
 
 	body := responseRecorder.Body.String()
-
 	list := strings.Split(body, ",")
 
 	assert.Len(t, list, totalCount)
